@@ -10,7 +10,6 @@ namespace EditorJS;
 class ConfigLoader
 {
     public $tools = [];
-    public $customTags = [];
 
     /**
      * ConfigLoader constructor
@@ -27,7 +26,6 @@ class ConfigLoader
 
         $config = json_decode($configuration, true);
         $this->loadTools($config);
-        $this->loadCustomTags($config);
     }
 
     /**
@@ -62,17 +60,5 @@ class ConfigLoader
     private function loadTool($data)
     {
         return $data;
-    }
-
-    /**
-     * Load custom HTML tags from configuration
-     */
-    private function loadCustomTags($config)
-    {
-        if (!isset($config['customTags'])) {
-            throw new EditorJSException('Custom HTML tags not found in configuration');
-        }
-
-        $this->customTags = $config['customHTMLTags'];
     }
 }
