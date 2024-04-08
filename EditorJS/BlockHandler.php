@@ -2,8 +2,6 @@
 
 namespace EditorJS;
 
-use SebastianBergmann\Type\TrueType;
-
 /**
  * Class BlockHandler
  *
@@ -20,7 +18,7 @@ class BlockHandler
      * @var ConfigLoader|null
      */
     private $rules = null;
-
+    
     /**
      * BlockHandler constructor
      *
