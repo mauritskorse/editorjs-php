@@ -61,4 +61,16 @@ class ConfigLoader
     {
         return $data;
     }
+
+    /**
+     * Load custom HTML tags from configuration
+     */
+    private function loadCustomTags($config)
+    {
+        if (!isset($config['customTags'])) {
+            throw new EditorJSException('Custom HTML tags not found in configuration');
+        }
+
+        $this->customTags = $config['customTags'];
+    }
 }

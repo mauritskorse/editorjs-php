@@ -243,16 +243,106 @@ class BlockHandler
 
         $sanitizer->set('HTML.Allowed', $allowedTags);
 
-        /**
-         * Define custom HTML Definition for mark tool
-         */
         if ($def = $sanitizer->maybeGetRawHTMLDefinition()) {
-            $def->addElement('mark', 'Inline', 'Inline', 'Common');
+            // modify the raw HTML definition
+            $this->addCustomHTMLDefinitions($def);
         }
 
         $purifier = new \HTMLPurifier($sanitizer);
 
         return $purifier;
+    }
+
+    /**
+     * TODO
+     */
+    private function addCustomHTMLDefinitions($def)
+    {
+        if($this->rules->customTags){
+
+            // default to be added
+            $def->addElement('mark', 'Inline', 'Inline', 'Common');
+
+            foreach($this->rules->customTags as $tag => $tagData){
+                /**
+                 * Convenience function that sets up a new element
+                 * @param string $element Name of element to add
+                 * @param string|bool $type What content set should element be registered to?
+                 *              Set as false to skip this step.
+                 * @param string|\HTMLPurifier_ChildDef $contents Allowed children in form of:
+                 *              "$content_model_type: $content_model"
+                 * @param array|string $attr_includes What attribute collections to register to
+                 *              element?
+                 * @param array $attr What unique attributes does the element define?
+                 * @see HTMLPurifier_ElementDef:: for in-depth descriptions of these parameters.
+                 * @return \HTMLPurifier_ElementDef Created element definition object, so you
+                 *         can set advanced parameters
+                 */
+
+                /**
+                 * "customTags": {
+                 *   "tagName1": {
+                 *     "type": "string",
+                 *     "contents": "string", (Empty, Inline, Flow)
+                 *     "collection": "Common",
+                 *     "attributes": {
+                 *       "attrName1": "attrType",
+                 *       "attrName2": { "type": "Enum", "options": "item1,item2,item3" | ["item","item","item"] }
+                 *       "attrName2": { "type": "Number", "options": [bool, bool, bool] }
+                 *     }
+                 *   }
+                 * }
+                 */
+                $def->addElement(
+                    $tag, 
+                    $tagData['type'] ?: 'Inline', 
+                    $tagData['contents'] ?: 'Inline', 
+                    $tagData['collection'] ?: 'Common'
+                );
+                
+                // custom attributes
+                foreach($tagData['attributes'] as $attrName => $attrData){
+
+                    /**
+                     * [{ name: '', attr: '', type: ''| {} }]
+                     * Adds a custom attribute to a pre-existing element
+                     * @note This is strictly convenience, and does not have a corresponding
+                     *       method in HTMLPurifier_HTMLModule
+                     * @param string $element_name Element name to add attribute to
+                     * @param string $attr_name Name of attribute
+                     * @param mixed $def Attribute definition, can be string or object, see
+                     *             HTMLPurifier_AttrTypes for details \HTMLPurifier\HTMLPurifier_AttrTypes
+                     */
+                    if(is_string($attrData)){
+                        // no config options given for attribute type (default)
+                        // Not implemented: in case # is present, the user might have defined it according to HTMLPurifier docs: i.e. Enum#_blank,_self,_target,_top
+                        $def->addAttribute($tag, $attrName, $attrData);
+                    }
+                    elseif(isset($attrData['type'])){
+                        /** 
+                         * note the types are case sensitive!
+                         * @see \HTMLPurifier_AttrTypes::class for options
+                         */
+                        if($attrData['type'] == 'Enum'){
+                            if(is_string($attrData['options'])){
+                                // we assume that the options are comma separated
+                                $options = explode(',', $attrData['options']);
+                            } else{
+                                $options = $attrData['options'];
+                            }
+                            $def->addAttribute($tag, $attrName, $attrData['type'], new \HTMLPurifier_AttrDef_Enum( $options ) );
+                        }
+                        if($attrData['type'] == 'Number'){
+                            $def->addAttribute($tag, $attrName, $attrData['type'], new \HTMLPurifier_AttrDef_Integer( 
+                                $attrData['options'][0] ?: true, // negative
+                                $attrData['options'][1] ?: true, // zero
+                                $attrData['options'][2] ?: true  // positive
+                            ));
+                        }
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -266,6 +356,7 @@ class BlockHandler
         $sanitizer->set('URI.AllowedSchemes', ['http' => true, 'https' => true, 'mailto' => true, 'tel' => true]);
         $sanitizer->set('AutoFormat.RemoveEmpty', true);
         $sanitizer->set('HTML.DefinitionID', 'html5-definitions');
+        $sanitizer->set('HTML.DefinitionRev', 1);
 
         $cacheDirectory = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'purifier';
         if (!is_dir($cacheDirectory)) {
