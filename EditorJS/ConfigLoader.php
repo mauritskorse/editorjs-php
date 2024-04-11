@@ -11,6 +11,8 @@ class ConfigLoader
 {
     public $tools = [];
 
+    public $customTags = [];
+
     /**
      * ConfigLoader constructor
      *
