@@ -274,8 +274,43 @@ Another configuration example: [/tests/samples/test-config.json](/tests/samples/
 
 If you connect a new Tool on the frontend-side, then you should create a configuration rule for that Tool to validate it on server-side.
 
+# Custom Tags and Attributes
+
+Sometimes you want to use tags or tag attributes for your tools that are not by default supported by [HTMLPurifier](https://github.com/ezyang/htmlpurifier). For example, by default HTMLPurifier filters out the `<mark>` tag, so we added support to this by default.
+You can add additional tags through the config:
+
+```json
+{ 
+  'tools': {
+    //
+  },
+  'customTags':{
+
+  }
+}
+```
+
+## Setting custom tags
+
+```json
+'customTags': {
+   'tagName1': {
+     'type': 'string',
+     'contents': 'string', (Empty, Inline, Flow)
+     'collection': 'Common',
+     'attributes': {
+       'attrName1': 'attrType',
+       'attrName2': { 'type': 'Enum', 'options': 'item1,item2,item3' | ['item','item','item'] }
+       'attrName3': { 'type': 'Number', 'options': [bool, bool, bool] }
+     }
+   }
+ }
+```
+
+...
+
 ## Repository 
-<a href="https://github.com/codex-editor/editorjs-php/">https://github.com/codex-editor/editorjs-php/</a>
+<a href='https://github.com/codex-editor/editorjs-php/'>https://github.com/codex-editor/editorjs-php/</a>
 
 
 ## About CodeX
