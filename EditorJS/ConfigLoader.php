@@ -28,6 +28,7 @@ class ConfigLoader
 
         $config = json_decode($configuration, true);
         $this->loadTools($config);
+        $this->loadCustomTags($config);
     }
 
     /**
