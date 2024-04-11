@@ -10,6 +10,7 @@ namespace EditorJS;
 class ConfigLoader
 {
     public $tools = [];
+    
     public $customTags = [];
 
     /**
