@@ -73,6 +73,6 @@ class ConfigLoader
             throw new EditorJSException('Custom HTML tags not found in configuration');
         }
 
-        $this->customTags = $config['customHTMLTags'];
+        $this->customTags = $config['customTags'];
     }
 }
