@@ -245,14 +245,10 @@ class BlockHandler
 
         $sanitizer->set('HTML.Allowed', $allowedTags);
 
-        /**
-         * Define custom HTML Definition for mark tool
-
         if ($def = $sanitizer->maybeGetRawHTMLDefinition()) {
-            $def->addElement('mark', 'Inline', 'Inline', 'Common');
+            // modify the raw HTML definition
+            $this->addCustomHTMLDefinitions($def);
         }
-        */
-        $this->addCustomHTMLDefinitions($sanitizer);
 
         $purifier = new \HTMLPurifier($sanitizer);
 
@@ -262,10 +258,9 @@ class BlockHandler
     /**
      * TODO
      */
-    private function addCustomHTMLDefinitions($sanitizer)
+    private function addCustomHTMLDefinitions($def)
     {
         if($this->rules->customTags){
-            $def = $sanitizer->maybeGetRawHTMLDefinition();
 
             // default to be added
             $def->addElement('mark', 'Inline', 'Inline', 'Common');
@@ -276,13 +271,13 @@ class BlockHandler
                  * @param string $element Name of element to add
                  * @param string|bool $type What content set should element be registered to?
                  *              Set as false to skip this step.
-                 * @param string|HTMLPurifier_ChildDef $contents Allowed children in form of:
+                 * @param string|\HTMLPurifier_ChildDef $contents Allowed children in form of:
                  *              "$content_model_type: $content_model"
                  * @param array|string $attr_includes What attribute collections to register to
                  *              element?
                  * @param array $attr What unique attributes does the element define?
                  * @see HTMLPurifier_ElementDef:: for in-depth descriptions of these parameters.
-                 * @return HTMLPurifier_ElementDef Created element definition object, so you
+                 * @return \HTMLPurifier_ElementDef Created element definition object, so you
                  *         can set advanced parameters
                  */
 
@@ -363,6 +358,7 @@ class BlockHandler
         $sanitizer->set('URI.AllowedSchemes', ['http' => true, 'https' => true, 'mailto' => true, 'tel' => true]);
         $sanitizer->set('AutoFormat.RemoveEmpty', true);
         $sanitizer->set('HTML.DefinitionID', 'html5-definitions');
+        $sanitizer->set('HTML.DefinitionRev', 1);
 
         $cacheDirectory = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'purifier';
         if (!is_dir($cacheDirectory)) {
