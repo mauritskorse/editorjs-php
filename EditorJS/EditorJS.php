@@ -112,6 +112,7 @@ class EditorJS
                 $block["tunes"] ?? []
             );
             if (!empty($sanitizedBlock)) {
+                $sanitizedBlock = array_merge($sanitizedBlock, ["id"=>$block['id']]);
                 array_push($sanitizedBlocks, $sanitizedBlock);
             }
         }
