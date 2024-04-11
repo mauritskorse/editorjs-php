@@ -358,7 +358,7 @@ class BlockHandler
         $sanitizer->set('URI.AllowedSchemes', ['http' => true, 'https' => true, 'mailto' => true, 'tel' => true]);
         $sanitizer->set('AutoFormat.RemoveEmpty', true);
         $sanitizer->set('HTML.DefinitionID', 'html5-definitions');
-        $sanitizer->set('HTML.DefinitionRev', 1);
+        $sanitizer->set('HTML.DefinitionRev', time()); 
 
         $cacheDirectory = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'purifier';
         if (!is_dir($cacheDirectory)) {
