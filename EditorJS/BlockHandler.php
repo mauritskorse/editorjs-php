@@ -2,8 +2,6 @@
 
 namespace EditorJS;
 
-use SebastianBergmann\Type\TrueType;
-
 /**
  * Class BlockHandler
  *
